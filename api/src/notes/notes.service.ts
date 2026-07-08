@@ -25,7 +25,8 @@ export class NotesService {
       });
     }
 
-    return this.notesRepository.save(note);
+    const saved = await this.notesRepository.save(note);
+    return this.findOne(saved.id);
   }
 
   async findAll(categoryId?: number): Promise<Note[]> {
@@ -63,7 +64,8 @@ export class NotesService {
           : [];
     }
 
-    return this.notesRepository.save(note);
+    await this.notesRepository.save(note);
+    return this.findOne(id);
   }
 
   async remove(id: number): Promise<void> {

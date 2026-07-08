@@ -20,6 +20,8 @@ import { Category } from '../categories/category.model';
         <a routerLink="/categories" class="btn-categories">Gestionar Categorías</a>
       </div>
 
+      <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+
       <div class="filter-bar" *ngIf="categories.length > 0">
         <label>Filtrar por categoría:</label>
         <select [(ngModel)]="filterCategoryId" (change)="applyFilter()">
@@ -57,6 +59,8 @@ import { Category } from '../categories/category.model';
     .toolbar { display: flex; gap: 12px; margin-bottom: 16px; }
     .btn-create { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; }
     .btn-categories { display: inline-block; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 4px; }
+    .alert { padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
     .filter-bar select { padding: 6px 10px; border: 1px solid #ddd; border-radius: 4px; }
     .notes-grid { display: grid; gap: 16px; }
@@ -75,6 +79,7 @@ export class NotesListComponent implements OnInit {
   notes: Note[] = [];
   categories: Category[] = [];
   filterCategoryId: number | undefined = undefined;
+  error = '';
 
   constructor(
     private notesService: NotesService,
@@ -82,12 +87,19 @@ export class NotesListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.categoriesService.getAll().subscribe(c => this.categories = c);
+    this.categoriesService.getAll().subscribe({
+      next: c => this.categories = c,
+      error: () => this.error = 'Error al cargar categorías',
+    });
     this.loadNotes();
   }
 
   private loadNotes(): void {
-    this.notesService.getAll(this.filterCategoryId).subscribe(n => this.notes = n);
+    this.error = '';
+    this.notesService.getAll(this.filterCategoryId).subscribe({
+      next: n => this.notes = n,
+      error: () => this.error = 'Error al cargar notas',
+    });
   }
 
   applyFilter(): void {
@@ -95,8 +107,10 @@ export class NotesListComponent implements OnInit {
   }
 
   deleteNote(id: number): void {
-    this.notesService.delete(id).subscribe(() => {
-      this.notes = this.notes.filter(n => n.id !== id);
+    this.error = '';
+    this.notesService.delete(id).subscribe({
+      next: () => this.notes = this.notes.filter(n => n.id !== id),
+      error: () => this.error = 'Error al eliminar la nota',
     });
   }
 }

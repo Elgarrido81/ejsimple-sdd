@@ -14,6 +14,8 @@ import { Category } from '../categories/category.model';
     <div class="form-container">
       <h1>{{ isEdit ? 'Editar Nota' : 'Nueva Nota' }}</h1>
 
+      <div class="alert alert-error" *ngIf="error">{{ error }}</div>
+
       <div class="form-group">
         <label for="title">Título</label>
         <input id="title" [(ngModel)]="title" placeholder="Título de la nota" required />
@@ -35,7 +37,9 @@ import { Category } from '../categories/category.model';
       </div>
 
       <div class="form-actions">
-        <button (click)="save()" [disabled]="!title.trim()">Guardar</button>
+        <button (click)="save()" [disabled]="!title.trim() || saving">
+          {{ saving ? 'Guardando...' : 'Guardar' }}
+        </button>
         <a routerLink="/notes">Cancelar</a>
       </div>
     </div>
@@ -45,6 +49,8 @@ import { Category } from '../categories/category.model';
     .form-group { margin-bottom: 16px; }
     label { display: block; margin-bottom: 4px; font-weight: bold; }
     input, textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+    .alert { padding: 10px 16px; border-radius: 4px; margin-bottom: 16px; }
+    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
     .checkbox-label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; }
     .cat-badge { padding: 2px 10px; border-radius: 12px; color: white; font-size: 0.85em; }
@@ -61,6 +67,8 @@ export class NoteFormComponent implements OnInit {
   private noteId?: number;
   categories: Category[] = [];
   selectedCategoryIds = new Set<number>();
+  error = '';
+  saving = false;
 
   constructor(
     private notesService: NotesService,
@@ -70,18 +78,25 @@ export class NoteFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.categoriesService.getAll().subscribe(cats => {
-      this.categories = cats;
+    this.categoriesService.getAll().subscribe({
+      next: cats => this.categories = cats,
+      error: () => this.error = 'Error al cargar categorías',
     });
 
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit = true;
       this.noteId = Number(id);
-      this.notesService.getById(this.noteId).subscribe(note => {
-        this.title = note.title;
-        this.content = note.content || '';
-        this.selectedCategoryIds = new Set((note.categories || []).map(c => c.id));
+      this.notesService.getById(this.noteId).subscribe({
+        next: note => {
+          this.title = note.title;
+          this.content = note.content || '';
+          this.selectedCategoryIds = new Set((note.categories || []).map(c => c.id));
+        },
+        error: () => {
+          this.error = 'Error al cargar la nota';
+          this.router.navigate(['/notes']);
+        },
       });
     }
   }
@@ -97,6 +112,9 @@ export class NoteFormComponent implements OnInit {
   save(): void {
     if (!this.title.trim()) return;
 
+    this.error = '';
+    this.saving = true;
+
     const dto: any = { title: this.title.trim(), content: this.content.trim() || undefined };
     if (this.selectedCategoryIds.size > 0) {
       dto.categoryIds = Array.from(this.selectedCategoryIds);
@@ -106,6 +124,12 @@ export class NoteFormComponent implements OnInit {
       ? this.notesService.update(this.noteId, dto)
       : this.notesService.create(dto);
 
-    request.subscribe(() => this.router.navigate(['/notes']));
+    request.subscribe({
+      next: () => this.router.navigate(['/notes']),
+      error: () => {
+        this.error = 'Error al guardar la nota. Verifica que el backend esté corriendo.';
+        this.saving = false;
+      },
+    });
   }
 }
