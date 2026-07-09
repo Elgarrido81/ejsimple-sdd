@@ -29,11 +29,17 @@ export class NotesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todas las notas (opcional filtrar por categoría)' })
-  @ApiResponse({ status: 200, description: 'Lista de notas' })
+  @ApiOperation({ summary: 'Listar notas con paginación y filtro opcional por categoría' })
+  @ApiResponse({ status: 200, description: 'Lista paginada de notas' })
   @ApiQuery({ name: 'categoryId', required: false, type: Number })
-  findAll(@Query('categoryId', new ParseIntPipe({ optional: true })) categoryId?: number): Promise<Note[]> {
-    return this.notesService.findAll(categoryId);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(
+    @Query('categoryId', new ParseIntPipe({ optional: true })) categoryId?: number,
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.notesService.findAll(categoryId, page, limit);
   }
 
   @Get(':id')

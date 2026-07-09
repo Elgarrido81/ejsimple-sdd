@@ -14,7 +14,7 @@ async function bootstrap() {
   });
 
   const config = new DocumentBuilder()
-    .setTitle('Stack Mindep API')
+    .setTitle('ejsimple-sdd API')
     .setDescription('Personal Notes API')
     .setVersion('1.0')
     .build();

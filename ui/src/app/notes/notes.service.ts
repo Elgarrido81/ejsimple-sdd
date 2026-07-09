@@ -1,32 +1,74 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Note, CreateNoteDto, UpdateNoteDto } from './note.model';
+
+export interface Note {
+  id: number;
+  title: string;
+  content: string | null;
+  categories: { id: number; name: string; color: string | null; createdAt: string }[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaginatedNotes {
+  data: Note[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CreateNoteDto {
+  title: string;
+  content?: string;
+  categoryIds?: number[];
+}
+
+export interface UpdateNoteDto {
+  title?: string;
+  content?: string;
+  categoryIds?: number[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class NotesService {
   private readonly apiUrl = '/api/v1/notes';
 
-  constructor(private http: HttpClient) {}
-
-  getAll(categoryId?: number): Observable<Note[]> {
-    const params = categoryId ? { categoryId: String(categoryId) } : undefined;
-    return this.http.get<Note[]>(this.apiUrl, { params });
+  async getAll(categoryId?: number, page: number = 1, limit: number = 10): Promise<PaginatedNotes> {
+    const params = new URLSearchParams();
+    if (categoryId) params.set('categoryId', String(categoryId));
+    params.set('page', String(page));
+    params.set('limit', String(limit));
+    const res = await fetch(`${this.apiUrl}?${params}`);
+    return res.json();
   }
 
-  getById(id: number): Observable<Note> {
-    return this.http.get<Note>(`${this.apiUrl}/${id}`);
+  async getById(id: number): Promise<Note> {
+    const res = await fetch(`${this.apiUrl}/${id}`);
+    return res.json();
   }
 
-  create(dto: CreateNoteDto): Observable<Note> {
-    return this.http.post<Note>(this.apiUrl, dto);
+  async create(dto: CreateNoteDto): Promise<Note> {
+    const res = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+    if (!res.ok) throw new Error('Error al crear nota');
+    return res.json();
   }
 
-  update(id: number, dto: UpdateNoteDto): Observable<Note> {
-    return this.http.put<Note>(`${this.apiUrl}/${id}`, dto);
+  async update(id: number, dto: UpdateNoteDto): Promise<Note> {
+    const res = await fetch(`${this.apiUrl}/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+    if (!res.ok) throw new Error('Error al actualizar nota');
+    return res.json();
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  async delete(id: number): Promise<void> {
+    const res = await fetch(`${this.apiUrl}/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Error al eliminar nota');
   }
 }

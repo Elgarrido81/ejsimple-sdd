@@ -1,0 +1,62 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-navbar {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 24px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 60px;
+  gap: 32px;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar-brand:hover { color: var(--color-primary); }
+
+.navbar-links {
+  display: flex;
+  gap: 4px;
+}
+
+.navbar-link {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background var(--transition), color var(--transition);
+}
+
+.navbar-link:hover {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.navbar-link.active {
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.app-content {
+  flex: 1;
+}

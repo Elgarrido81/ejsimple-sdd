@@ -21,7 +21,7 @@ Establecer la base del proyecto Personal Notes — un CRUD completo de notas per
 
 ## Impact
 
-- Creación del repo `stack-mindep-api`: proyecto NestJS con TypeORM, PostgreSQL, Swagger
-- Creación del repo `stack-mindep-ui`: proyecto Angular con módulo de notas
-- Meta-repo `stack-mindep`: orquesta el cambio via OpenSpec
+- Creación del repo `ejsimple-sdd-api`: proyecto NestJS con TypeORM, PostgreSQL, Swagger
+- Creación del repo `ejsimple-sdd-ui`: proyecto Angular con módulo de notas
+- Meta-repo `ejsimple-sdd`: orquesta el cambio via OpenSpec
 - No hay impacto en sistemas existentes (proyecto desde cero)

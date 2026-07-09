@@ -1,69 +1,104 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CategoriesService } from './categories.service';
-import { Category } from './category.model';
+import { CategoriesService, Category } from './categories.service';
 
 @Component({
   selector: 'app-category-list',
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <div class="container">
-      <h1>Categorías</h1>
-      <a routerLink="/categories/new" class="btn-create">+ Nueva Categoría</a>
+    <div class="page">
+      <div class="page-header">
+        <h1>Categorías</h1>
+        <a routerLink="/categories/new" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Nueva Categoría
+        </a>
+      </div>
 
-      <table class="table" *ngIf="categories.length > 0">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Color</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let cat of categories">
-            <td>{{ cat.name }}</td>
-            <td>
-              <span class="color-badge" [style.background]="cat.color || '#ccc'">
-                {{ cat.color || 'Ninguno' }}
-              </span>
-            </td>
-            <td class="actions">
-              <a [routerLink]="['/categories', cat.id, 'edit']">Editar</a>
-              <button (click)="deleteCategory(cat.id)">Eliminar</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="alert alert-error" *ngIf="error">{{ error }}</div>
 
-      <p *ngIf="categories.length === 0" class="empty">No hay categorías aún.</p>
+      <div class="categories-list" *ngIf="categories.length > 0">
+        <div *ngFor="let cat of categories" class="category-card card">
+          <div class="category-info">
+            <span class="badge" [style.background]="cat.color || '#6c757d'">
+              {{ cat.name }}
+            </span>
+            <span class="category-color">{{ cat.color || 'Sin color' }}</span>
+          </div>
+          <div class="category-actions">
+            <a [routerLink]="['/categories', cat.id, 'edit']" class="btn btn-secondary btn-sm">Editar</a>
+            <button (click)="deleteCategory(cat.id)" class="btn btn-danger btn-sm">Eliminar</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="categories.length === 0">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-border); margin-bottom: 16px;">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        <p>No hay categorías aún.</p>
+        <a routerLink="/categories/new" class="btn btn-primary">Crea tu primera categoría</a>
+      </div>
     </div>
   `,
   styles: [`
-    .container { padding: 20px; max-width: 800px; margin: 0 auto; }
-    .btn-create { display: inline-block; padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin-bottom: 20px; }
-    .table { width: 100%; border-collapse: collapse; }
-    .table th, .table td { text-align: left; padding: 10px; border-bottom: 1px solid #ddd; }
-    .color-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; color: white; font-size: 0.85em; }
-    .actions { display: flex; gap: 12px; }
-    .actions a { color: #007bff; cursor: pointer; }
-    .actions button { color: #dc3545; border: none; background: none; cursor: pointer; }
-    .empty { color: #999; text-align: center; margin-top: 40px; }
+    .categories-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .category-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+    }
+    .category-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .category-color {
+      font-size: 0.85rem;
+      color: var(--color-text-secondary);
+      font-family: monospace;
+    }
+    .category-actions {
+      display: flex;
+      gap: 6px;
+    }
   `]
 })
 export class CategoryListComponent implements OnInit {
   categories: Category[] = [];
+  error = '';
 
-  constructor(private categoriesService: CategoriesService) {}
+  constructor(
+    private categoriesService: CategoriesService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
-  ngOnInit(): void {
-    this.categoriesService.getAll().subscribe(c => this.categories = c);
+  async ngOnInit(): Promise<void> {
+    try {
+      this.categories = await this.categoriesService.getAll();
+    } catch {
+      this.error = 'Error al cargar categorías';
+    }
+    this.cdr.detectChanges();
   }
 
-  deleteCategory(id: number): void {
-    this.categoriesService.delete(id).subscribe(() => {
+  async deleteCategory(id: number): Promise<void> {
+    this.error = '';
+    try {
+      await this.categoriesService.delete(id);
       this.categories = this.categories.filter(c => c.id !== id);
-    });
+    } catch {
+      this.error = 'Error al eliminar la categoría';
+    }
+    this.cdr.detectChanges();
   }
 }

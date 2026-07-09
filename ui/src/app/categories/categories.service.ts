@@ -1,31 +1,58 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { Category, CreateCategoryDto, UpdateCategoryDto } from './category.model';
+
+export interface Category {
+  id: number;
+  name: string;
+  color: string | null;
+  createdAt: string;
+}
+
+export interface CreateCategoryDto {
+  name: string;
+  color?: string;
+}
+
+export interface UpdateCategoryDto {
+  name?: string;
+  color?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CategoriesService {
   private readonly apiUrl = '/api/v1/categories';
 
-  constructor(private http: HttpClient) {}
-
-  getAll(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.apiUrl);
+  async getAll(): Promise<Category[]> {
+    const res = await fetch(this.apiUrl);
+    return res.json();
   }
 
-  getById(id: number): Observable<Category> {
-    return this.http.get<Category>(`${this.apiUrl}/${id}`);
+  async getById(id: number): Promise<Category> {
+    const res = await fetch(`${this.apiUrl}/${id}`);
+    return res.json();
   }
 
-  create(dto: CreateCategoryDto): Observable<Category> {
-    return this.http.post<Category>(this.apiUrl, dto);
+  async create(dto: CreateCategoryDto): Promise<Category> {
+    const res = await fetch(this.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+    if (!res.ok) throw new Error('Error al crear categoría');
+    return res.json();
   }
 
-  update(id: number, dto: UpdateCategoryDto): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrl}/${id}`, dto);
+  async update(id: number, dto: UpdateCategoryDto): Promise<Category> {
+    const res = await fetch(`${this.apiUrl}/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dto),
+    });
+    if (!res.ok) throw new Error('Error al actualizar categoría');
+    return res.json();
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  async delete(id: number): Promise<void> {
+    const res = await fetch(`${this.apiUrl}/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Error al eliminar categoría');
   }
 }

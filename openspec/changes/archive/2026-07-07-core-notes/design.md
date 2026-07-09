@@ -26,7 +26,7 @@ Primer cambio del proyecto Personal Notes. Se implementa un CRUD completo de not
 | Documentación API | `@nestjs/swagger` | Manual (OpenAPI escrito a mano) | Generación automática desde decoradores, nunca se desincroniza. Sirve Swagger UI en `/api/docs` |
 | Versionado | URI (`/api/v1/notes`) | Header / Media Type | Más explícito, estándar de la industria, compatible con Swagger |
 | Estructura de repos | Repos separados (api + ui) | Monorepo | Refleja la realidad laboral, deploys independientes, contrato API explícito |
-| Meta-repo SDD | `stack-mindep` con OpenSpec | OpenSpec en cada repo | Una fuente de verdad para las especificaciones, los repos de código son solo implementación |
+| Meta-repo SDD | `ejsimple-sdd` con OpenSpec | OpenSpec en cada repo | Una fuente de verdad para las especificaciones, los repos de código son solo implementación |
 
 ## Risks / Trade-offs
 

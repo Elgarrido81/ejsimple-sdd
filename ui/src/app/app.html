@@ -1,1 +1,20 @@
-<router-outlet />
+<div class="app-shell">
+  <nav class="app-navbar">
+    <div class="navbar-inner">
+      <a routerLink="/" class="navbar-brand">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+        </svg>
+        Mis Notas
+      </a>
+      <div class="navbar-links">
+        <a routerLink="/notes" routerLinkActive="active" class="navbar-link">Notas</a>
+        <a routerLink="/categories" routerLinkActive="active" class="navbar-link">Categorías</a>
+      </div>
+    </div>
+  </nav>
+  <main class="app-content">
+    <router-outlet />
+  </main>
+</div>

@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { NotesModule } from './notes/notes.module';
 import { CategoriesModule } from './categories/categories.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -13,12 +14,13 @@ import { CategoriesModule } from './categories/categories.module';
       port: Number(process.env.DB_PORT) || 5432,
       username: process.env.DB_USER || 'elias',
       password: process.env.DB_PASSWORD || 'postgres',
-      database: process.env.DB_NAME || 'stack_mindep',
+      database: process.env.DB_NAME || 'ejsimple_sdd',
       autoLoadEntities: true,
       synchronize: true,
     }),
     NotesModule,
     CategoriesModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,6 +1,6 @@
 ## 1. Backend — Proyecto NestJS
 
-- [x] 1.1 Inicializar proyecto NestJS con CLI (`nest new stack-mindep-api`)
+- [x] 1.1 Inicializar proyecto NestJS con CLI (`nest new ejsimple-sdd-api`)
 - [x] 1.2 Configurar PostgreSQL con TypeORM en `app.module.ts`
 - [x] 1.3 Crear Note entity con campos: id, title, content, createdAt, updatedAt
 - [x] 1.4 Crear DTOs: CreateNoteDto, UpdateNoteDto con validación (class-validator)
@@ -12,7 +12,7 @@
 
 ## 2. Frontend — Proyecto Angular
 
-- [x] 2.1 Inicializar proyecto Angular con CLI (`ng new stack-mindep-ui`)
+- [x] 2.1 Inicializar proyecto Angular con CLI (`ng new ejsimple-sdd-ui`)
 - [x] 2.2 Crear Note model (interfaz TypeScript)
 - [x] 2.3 Crear NoteService con HttpClient (getAll, getById, create, update, delete)
 - [x] 2.4 Crear NotesListComponent con tabla/cards de notas

@@ -1,4 +1,4 @@
-# Stack Mindep UI
+# ejsimple-sdd UI
 
 Frontend Angular con standalone components. UI para notas y categorías.
 

@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ejsimple_sdd
+      POSTGRES_USER: elias
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U elias -d ejsimple_sdd"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: elias
+      DB_PASSWORD: postgres
+      DB_NAME: ejsimple_sdd
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ui:
+    build: ./ui
+    ports:
+      - "4200:4200"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

@@ -1,4 +1,4 @@
-# Stack Mindep API
+# ejsimple-sdd API
 
 Backend NestJS con TypeORM + PostgreSQL. CRUD de notas y categorías con relación many-to-many.
 

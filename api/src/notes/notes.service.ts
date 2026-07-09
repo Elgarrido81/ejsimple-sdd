@@ -29,16 +29,23 @@ export class NotesService {
     return this.findOne(saved.id);
   }
 
-  async findAll(categoryId?: number): Promise<Note[]> {
+  async findAll(
+    categoryId?: number,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{ data: Note[]; total: number; page: number; limit: number; totalPages: number }> {
     const where: any = {};
     if (categoryId) {
       where.categories = { id: categoryId };
     }
-    return this.notesRepository.find({
+    const [data, total] = await this.notesRepository.findAndCount({
       where,
       relations: { categories: true },
       order: { createdAt: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async findOne(id: number): Promise<Note> {
