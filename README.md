@@ -94,12 +94,12 @@ graph LR
     SS --> CE
 
     AM --> TORM --> PG[(PostgreSQL)]
-    TORM -.->|"synchronize: true"| NOTA
-    TORM -.->|"synchronize: true"| CAT
-    TORM -.->|"synchronize: true"| JN
+    TORM -. "sync" .-> NOTA
+    TORM -. "sync" .-> CAT
+    TORM -. "sync" .-> JN
 
-    NE -->|@JoinTable| JN
-    CE -->|inverse| JN
+    NE -- "@JoinTable" --> JN
+    CE -- "inverse" --> JN
 ```
 
 ### Capas del Backend
