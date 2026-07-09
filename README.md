@@ -85,100 +85,97 @@ Documentación interactiva: [`http://localhost:3000/api`](http://localhost:3000/
 
 ## Pruebas con curl
 
-Una vez que la app esté corriendo (`docker compose up --build -d`), ejecutá estos comandos en orden para probar el CRUD completo:
+Una vez que la app esté corriendo (`docker compose up --build -d`), ejecutá cada bloque por separado para probar el CRUD completo:
+
+### 1. Crear categorías
 
 ```bash
-echo "============================================"
-echo " 1. CREAR CATEGORÍAS"
-echo "============================================"
-
 curl -s -X POST http://localhost:4200/api/v1/categories \
   -H "Content-Type: application/json" \
   -d '{"name":"Trabajo","color":"#4f46e5"}' | python3 -m json.tool
+```
 
+```bash
 curl -s -X POST http://localhost:4200/api/v1/categories \
   -H "Content-Type: application/json" \
   -d '{"name":"Personal","color":"#10b981"}' | python3 -m json.tool
+```
 
+```bash
 curl -s -X POST http://localhost:4200/api/v1/categories \
   -H "Content-Type: application/json" \
   -d '{"name":"Salud","color":"#ef4444"}' | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 2. LISTAR CATEGORÍAS (deberían verse 3)"
-echo "============================================"
+### 2. Listar categorías (deberían verse 3)
 
+```bash
 curl -s http://localhost:4200/api/v1/categories | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 3. CREAR NOTAS CON Y SIN CATEGORÍAS"
-echo "============================================"
+### 3. Crear notas con y sin categorías
 
+```bash
 curl -s -X POST http://localhost:4200/api/v1/notes \
   -H "Content-Type: application/json" \
   -d '{"title":"Comprar víveres","content":"Leche, pan, huevos, fruta","categoryIds":[1,2]}' | python3 -m json.tool
+```
 
+```bash
 curl -s -X POST http://localhost:4200/api/v1/notes \
   -H "Content-Type: application/json" \
   -d '{"title":"Leer documentación","content":"NestJS y Angular","categoryIds":[1]}' | python3 -m json.tool
+```
 
+```bash
 curl -s -X POST http://localhost:4200/api/v1/notes \
   -H "Content-Type: application/json" \
   -d '{"title":"Nota rápida sin categoría"}' | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 4. LISTAR NOTAS (deberían verse 3)"
-echo "============================================"
+### 4. Listar notas (deberían verse 3)
 
+```bash
 curl -s "http://localhost:4200/api/v1/notes?page=1&limit=10" | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 5. FILTRAR NOTAS POR CATEGORÍA (Trabajo = 1)"
-echo "============================================"
+### 5. Filtrar notas por categoría (Trabajo = 1)
 
+```bash
 curl -s "http://localhost:4200/api/v1/notes?categoryId=1" | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 6. OBTENER NOTA POR ID"
-echo "============================================"
+### 6. Obtener nota por ID
 
+```bash
 curl -s http://localhost:4200/api/v1/notes/1 | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 7. ACTUALIZAR NOTA (cambiar título + categorías)"
-echo "============================================"
+### 7. Actualizar nota (cambiar título + categorías)
 
+```bash
 curl -s -X PUT http://localhost:4200/api/v1/notes/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"Comprar víveres (actualizado)","categoryIds":[2]}' | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 8. ACTUALIZAR CATEGORÍA (cambiar color)"
-echo "============================================"
+### 8. Actualizar categoría (cambiar color)
 
+```bash
 curl -s -X PUT http://localhost:4200/api/v1/categories/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"Oficina","color":"#1a73e8"}' | python3 -m json.tool
+```
 
-echo ""
-echo "============================================"
-echo " 9. ELIMINAR NOTA"
-echo "============================================"
+### 9. Eliminar nota
 
+```bash
 curl -s -o /dev/null -w "HTTP %{http_code} (204 = OK)\n" -X DELETE http://localhost:4200/api/v1/notes/3
+```
 
-echo ""
-echo "============================================"
-echo " 10. VERIFICAR QUE SE ELIMINÓ (3 notas menos)"
-echo "============================================"
+### 10. Verificar que se eliminó (deberían quedar 2)
 
+```bash
 curl -s "http://localhost:4200/api/v1/notes?page=1&limit=10" | python3 -c "
 import json,sys
 d = json.load(sys.stdin)
@@ -187,25 +184,18 @@ for n in d['data']:
     cats = ', '.join(c['name'] for c in n['categories']) if n['categories'] else 'sin categoría'
     print(f'  [{n[\"id\"]}] {n[\"title\"]} ({cats})')
 "
+```
 
-echo ""
-echo "============================================"
-echo " 11. ELIMINAR CATEGORÍA"
-echo "============================================"
+### 11. Eliminar categoría
 
+```bash
 curl -s -o /dev/null -w "HTTP %{http_code} (204 = OK)\n" -X DELETE http://localhost:4200/api/v1/categories/3
+```
 
-echo ""
-echo "============================================"
-echo " 12. VERIFICAR CATEGORÍAS RESTANTES"
-echo "============================================"
+### 12. Verificar categorías restantes
 
+```bash
 curl -s http://localhost:4200/api/v1/categories | python3 -m json.tool
-
-echo ""
-echo "============================================"
-echo " ✅ PRUEBAS COMPLETADAS"
-echo "============================================"
 ```
 
 ### Prueba desde el navegador
