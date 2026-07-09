@@ -94,9 +94,9 @@ graph LR
     SS --> CE
 
     AM --> TORM --> PG[(PostgreSQL)]
-    TORM -.->|synchronize: true| NOTA
-    TORM -.->|synchronize: true| CAT
-    TORM -.->|synchronize: true| JN
+    TORM -.->|"synchronize: true"| NOTA
+    TORM -.->|"synchronize: true"| CAT
+    TORM -.->|"synchronize: true"| JN
 
     NE -->|@JoinTable| JN
     CE -->|inverse| JN
