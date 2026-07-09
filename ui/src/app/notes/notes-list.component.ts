@@ -64,7 +64,11 @@ import { CategoriesService, Category } from '../categories/categories.service';
         </button>
       </div>
 
-      <div class="empty-state" *ngIf="notes.length === 0">
+      <div class="loading-state" *ngIf="loading">
+        <p>Cargando notas...</p>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && notes.length === 0">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-border); margin-bottom: 16px;">
           <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
           <polyline points="14 2 14 8 20 8"/>
@@ -141,6 +145,12 @@ import { CategoriesService, Category } from '../categories/categories.service';
       font-size: 0.9rem;
       color: var(--color-text-secondary);
     }
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-text-muted);
+      font-size: 0.95rem;
+    }
   `]
 })
 export class NotesListComponent implements OnInit {
@@ -152,6 +162,7 @@ export class NotesListComponent implements OnInit {
   totalPages = 0;
   readonly limit = 10;
   error = '';
+  loading = true;
 
   constructor(
     private notesService: NotesService,
@@ -160,16 +171,19 @@ export class NotesListComponent implements OnInit {
   ) {}
 
   async ngOnInit(): Promise<void> {
+    this.loading = true;
     try {
       this.categories = await this.categoriesService.getAll();
     } catch {
       this.error = 'Error al cargar categorías';
     }
     await this.loadNotes();
+    this.loading = false;
     this.cdr.detectChanges();
   }
 
   async loadNotes(): Promise<void> {
+    this.loading = true;
     try {
       const result = await this.notesService.getAll(this.filterCategoryId, this.page, this.limit);
       this.notes = result.data;
@@ -178,6 +192,7 @@ export class NotesListComponent implements OnInit {
     } catch {
       this.error = 'Error al cargar notas';
     }
+    this.loading = false;
   }
 
   async goToPage(page: number): Promise<void> {
