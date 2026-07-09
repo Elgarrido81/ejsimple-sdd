@@ -188,6 +188,7 @@ export class NotesListComponent implements OnInit {
   }
 
   async deleteNote(id: number): Promise<void> {
+    if (!confirm('¿Estás seguro de eliminar esta nota?')) return;
     this.error = '';
     try {
       await this.notesService.delete(id);

@@ -92,6 +92,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   async deleteCategory(id: number): Promise<void> {
+    if (!confirm('¿Estás seguro de eliminar esta categoría?')) return;
     this.error = '';
     try {
       await this.categoriesService.delete(id);
